@@ -1,0 +1,21 @@
+version: '3'
+services:
+  db: 
+    image: eqalpha/keydb
+    command: keydb-server /etc/keydb/keydb.conf --server-threads 10 --requirepass dalong  --masterauth dalong --multi-master yes  --active-replica yes --replicaof db2  6379  --replicaof db  6379
+    ports:
+     - 6379:6379
+  db2: 
+    image: eqalpha/keydb
+    command: keydb-server /etc/keydb/keydb.conf --server-threads 10 --requirepass dalong  --masterauth dalong --multi-master yes  --active-replica yes --replicaof db  6379  --replicaof db2  6379
+    ports:
+     - 6380:6379
+  nchan:
+     image: dalongrong/openresty-tengine:debug-njs-perf
+     privileged: true
+     cap_add:
+       - ALL
+     ports:
+     - "80:80"
+     volumes:
+     - "./nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf"

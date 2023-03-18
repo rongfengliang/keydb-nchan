@@ -2,11 +2,21 @@ version: '3'
 services:
   db: 
     image: eqalpha/keydb
-    command: keydb-server /etc/keydb/keydb.conf --server-threads 10 --requirepass dalong 
+    command: keydb-server /etc/keydb/keydb.conf --server-threads 10 --requirepass dalong  --masterauth dalong --active-replica yes --replicaof db2  6379
     ports:
      - 6379:6379
+  db2: 
+    image: eqalpha/keydb
+    command: keydb-server /etc/keydb/keydb.conf --server-threads 10 --requirepass dalong  --masterauth dalong --active-replica yes --replicaof db  6379
+    ports:
+     - 6380:6379
+  db3: 
+    image: eqalpha/keydb
+    command: keydb-server /etc/keydb/keydb.conf --server-threads 10 --requirepass dalong  --masterauth dalong
+    ports:
+     - 6381:6379
   nchan:
-     image: dalongrong/openresty-tengine:debug-njs-perf
+     image: dalongrong/openresty-tengine:debug-njs
      privileged: true
      cap_add:
        - ALL
