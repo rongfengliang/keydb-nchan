@@ -2,21 +2,22 @@ version: '3'
 services:
   db: 
     image: eqalpha/keydb
-    command: keydb-server /etc/keydb/keydb.conf --server-threads 10 --requirepass dalong  --masterauth dalong --active-replica yes --replicaof db2  6379
+    command: keydb-server /etc/keydb/keydb.conf --requirepass dalong  --masterauth dalong --active-replica yes --replicaof db2  6379
     ports:
      - 6379:6379
   db2: 
     image: eqalpha/keydb
-    command: keydb-server /etc/keydb/keydb.conf --server-threads 10 --requirepass dalong  --masterauth dalong --active-replica yes --replicaof db  6379
+    command: keydb-server /etc/keydb/keydb.conf   --requirepass dalong  --masterauth dalong --active-replica yes --replicaof db  6379
     ports:
      - 6380:6379
-  db3: 
-    image: eqalpha/keydb
-    command: keydb-server /etc/keydb/keydb.conf --server-threads 10 --requirepass dalong  --masterauth dalong
+  haproxy: 
+    image: haproxytech/haproxy-debian:2.7.5
+    volumes:
+      - "./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg"
     ports:
-     - 6381:6379
+    - "5001:5000"
   nchan:
-     image: dalongrong/openresty-tengine:debug-njs
+     image: openresty/openresty:1.21.4.1-6-alpine-fat
      privileged: true
      cap_add:
        - ALL
@@ -24,3 +25,4 @@ services:
      - "80:80"
      volumes:
      - "./nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf"
+     - "./app.log:/opt/app.log"
